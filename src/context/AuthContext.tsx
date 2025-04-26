@@ -1,7 +1,7 @@
-
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface User {
   id: string;
@@ -17,13 +17,13 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   adminLogin: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock user data - in a real app, this would be stored in your database
+// Mock user data for demo purposes (will be replaced by Supabase auth)
 const MOCK_USERS = [
   {
     id: "1",
@@ -48,103 +48,219 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Check for existing session on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem("bakeryUser");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    const getInitialSession = async () => {
+      setLoading(true);
+
+      try {
+        // Check for an active session with Supabase
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (session) {
+          // Get user details either from session or from a profiles table if you have one
+          const userData = {
+            id: session.user.id,
+            email: session.user.email || "",
+            name: session.user.user_metadata?.name || "User",
+            role: session.user.user_metadata?.role || "user"
+          };
+          
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error("Error checking authentication:", error);
+        toast.error("Authentication error. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getInitialSession();
+
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session) {
+          // User signed in
+          const userData = {
+            id: session.user.id,
+            email: session.user.email || "",
+            name: session.user.user_metadata?.name || "User",
+            role: session.user.user_metadata?.role || "user"
+          };
+          
+          setUser(userData);
+        } else {
+          // User signed out
+          setUser(null);
+        }
+        setLoading(false);
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
     setLoading(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const foundUser = MOCK_USERS.find(
-      u => u.email === email && u.password === password && u.role === "user"
-    );
-    
-    if (foundUser) {
-      const { password, ...userWithoutPassword } = foundUser;
-      setUser(userWithoutPassword as User);
-      localStorage.setItem("bakeryUser", JSON.stringify(userWithoutPassword));
-      toast.success("Login successful!");
-      navigate("/");
-    } else {
-      toast.error("Invalid email or password");
+    try {
+      // For demo purposes, keep the mock login option
+      if (email === "user@example.com" && password === "password123") {
+        const mockUser = MOCK_USERS[0];
+        setUser(mockUser);
+        localStorage.setItem("bakeryUser", JSON.stringify(mockUser));
+        toast.success("Login successful (mock user)!");
+        navigate("/");
+        return;
+      }
+      
+      // Attempt Supabase login
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.user) {
+        const userData = {
+          id: data.user.id,
+          email: data.user.email || "",
+          name: data.user.user_metadata?.name || "User",
+          role: data.user.user_metadata?.role || "user"
+        };
+        
+        setUser(userData);
+        toast.success("Login successful!");
+        navigate("/");
+      }
+    } catch (error: any) {
+      console.error("Login error:", error.message);
+      toast.error(error.message || "Login failed. Please check your credentials.");
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   const adminLogin = async (email: string, password: string) => {
     setLoading(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const foundUser = MOCK_USERS.find(
-      u => u.email === email && u.password === password && u.role === "admin"
-    );
-    
-    if (foundUser) {
-      const { password, ...userWithoutPassword } = foundUser;
-      setUser(userWithoutPassword as User);
-      localStorage.setItem("bakeryUser", JSON.stringify(userWithoutPassword));
-      toast.success("Admin login successful!");
-      navigate("/admin/dashboard");
-    } else {
-      toast.error("Invalid admin credentials");
+    try {
+      // For demo purposes, keep the mock admin login option
+      if (email === "admin@example.com" && password === "admin123") {
+        const mockAdmin = MOCK_USERS[1];
+        setUser(mockAdmin);
+        localStorage.setItem("bakeryUser", JSON.stringify(mockAdmin));
+        toast.success("Admin login successful (mock admin)!");
+        navigate("/admin/dashboard");
+        return;
+      }
+
+      // Attempt Supabase login
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.user) {
+        // Check if user has admin role (you should implement this check based on your user data structure)
+        const isAdmin = data.user.user_metadata?.role === "admin";
+        
+        if (!isAdmin) {
+          throw new Error("You do not have admin privileges");
+        }
+
+        const userData = {
+          id: data.user.id,
+          email: data.user.email || "",
+          name: data.user.user_metadata?.name || "Admin",
+          role: "admin"
+        };
+        
+        setUser(userData);
+        toast.success("Admin login successful!");
+        navigate("/admin/dashboard");
+      }
+    } catch (error: any) {
+      console.error("Admin login error:", error.message);
+      toast.error(error.message || "Admin login failed. Please check your credentials.");
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   const register = async (name: string, email: string, password: string) => {
     setLoading(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    if (MOCK_USERS.some(u => u.email === email)) {
-      toast.error("Email already in use");
+    try {
+      // Attempt to register with Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name,
+            role: "user"
+          }
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.user) {
+        toast.success("Registration successful! Check your email to confirm your account.");
+        navigate("/login");
+      }
+    } catch (error: any) {
+      console.error("Registration error:", error.message);
+      toast.error(error.message || "Registration failed. Please try again.");
+    } finally {
       setLoading(false);
-      return;
     }
-    
-    const newUser = {
-      id: `${MOCK_USERS.length + 1}`,
-      name,
-      email,
-      role: "user" as const
-    };
-    
-    setUser(newUser);
-    localStorage.setItem("bakeryUser", JSON.stringify(newUser));
-    toast.success("Registration successful!");
-    navigate("/");
-    
-    setLoading(false);
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("bakeryUser");
-    toast.success("Logged out successfully");
-    navigate("/");
+  const logout = async () => {
+    try {
+      // Sign out from Supabase
+      await supabase.auth.signOut();
+      
+      // Clear local storage
+      localStorage.removeItem("bakeryUser");
+      
+      // Update state
+      setUser(null);
+      toast.success("Logged out successfully");
+      navigate("/");
+    } catch (error: any) {
+      console.error("Logout error:", error.message);
+      toast.error("Logout failed. Please try again.");
+    }
   };
 
   const forgotPassword = async (email: string) => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const userExists = MOCK_USERS.some(u => u.email === email);
-    
-    if (userExists) {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/reset-password",
+      });
+
+      if (error) {
+        throw error;
+      }
+
       toast.success("Password reset link sent to your email");
-    } else {
-      toast.error("Email not found");
+    } catch (error: any) {
+      console.error("Password reset error:", error.message);
+      toast.error(error.message || "Failed to send reset email. Please try again.");
     }
   };
 

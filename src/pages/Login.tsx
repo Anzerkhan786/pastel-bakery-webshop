@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from 'sonner';
 
 const Login = () => {
   const [tab, setTab] = useState<string>('user');
@@ -18,10 +19,20 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (tab === 'user') {
-      await login(email, password);
-    } else {
-      await adminLogin(email, password);
+    if (!email || !password) {
+      toast.error("Please enter both email and password");
+      return;
+    }
+    
+    try {
+      if (tab === 'user') {
+        await login(email, password);
+      } else {
+        await adminLogin(email, password);
+      }
+    } catch (error) {
+      // Error is already handled in the auth context
+      console.error("Login submission error", error);
     }
   };
   
