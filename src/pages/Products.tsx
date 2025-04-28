@@ -33,9 +33,17 @@ const PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHZhbmlsbGElMjBjYWtlfGVufDB8fDB8fHww',
     category: 'cakes'
   },
-  // Cookies
   {
     id: '4',
+    name: 'Carrot Cake',
+    description: 'Moist carrot cake with walnuts and cream cheese frosting',
+    price: 29.99,
+    image: 'https://images.unsplash.com/photo-1605291521584-8e0f5a675740?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNhcnJvdCUyMGNha2V8ZW58MHx8MHx8fDA%3D',
+    category: 'cakes'
+  },
+  // Cookies
+  {
+    id: '5',
     name: 'Chocolate Chip Cookies',
     description: 'Classic cookies with Belgian chocolate chunks',
     price: 12.99,
@@ -43,7 +51,7 @@ const PRODUCTS: Product[] = [
     category: 'cookies'
   },
   {
-    id: '5',
+    id: '6',
     name: 'Oatmeal Raisin Cookies',
     description: 'Chewy oatmeal cookies with plump raisins',
     price: 11.99,
@@ -51,24 +59,32 @@ const PRODUCTS: Product[] = [
     category: 'cookies'
   },
   {
-    id: '6',
+    id: '7',
     name: 'Shortbread Cookies',
     description: 'Buttery Scottish-style shortbread',
     price: 10.99,
     image: 'https://images.unsplash.com/photo-1598839950984-034f6dc7b495?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2hvcnRicmVhZCUyMGNvb2tpZXN8ZW58MHx8MHx8fDA%3D',
     category: 'cookies'
   },
+  {
+    id: '8',
+    name: 'Macaron Cookies',
+    description: 'Colorful French macarons with various fillings',
+    price: 14.99,
+    image: 'https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWFjYXJvbnxlbnwwfHwwfHx8MA%3D%3D',
+    category: 'cookies'
+  },
   // Breads
   {
-    id: '7',
+    id: '9',
     name: 'Sourdough Bread',
     description: 'Traditional sourdough with perfect crust',
     price: 8.99,
-    image: 'https://images.unsplash.com/photo-1585478259715-2224b187c891?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8c291cmRvdWdoJTIwYnJlYWR8ZW58MHx8MHx8fDA%3D',
+    image: 'https://images.unsplash.com/photo-1586444248835-f34b8b1b6948?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c291cmRvdWdoJTIwYnJlYWR8ZW58MHx8MHx8fDA%3D',
     category: 'breads'
   },
   {
-    id: '8',
+    id: '10',
     name: 'Rustic Baguette',
     description: 'Classic French baguette with crispy crust',
     price: 4.99,
@@ -76,16 +92,24 @@ const PRODUCTS: Product[] = [
     category: 'breads'
   },
   {
-    id: '9',
+    id: '11',
     name: 'Whole Grain Loaf',
     description: 'Nutritious whole grain bread',
     price: 6.99,
     image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8d2hvbGUlMjBncmFpbiUyMGJyZWFkfGVufDB8fDB8fHww',
     category: 'breads'
   },
+  {
+    id: '12',
+    name: 'Ciabatta Bread',
+    description: 'Italian white bread with a porous interior',
+    price: 5.99,
+    image: 'https://images.unsplash.com/photo-1620921608597-f440fc486db5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y2lhYmF0dGElMjBicmVhZHxlbnwwfHwwfHx8MA%3D%3D',
+    category: 'breads'
+  },
   // Pastries
   {
-    id: '10',
+    id: '13',
     name: 'Classic Croissant',
     description: 'Flaky, buttery croissants made from scratch',
     price: 3.99,
@@ -93,7 +117,7 @@ const PRODUCTS: Product[] = [
     category: 'pastries'
   },
   {
-    id: '11',
+    id: '14',
     name: 'Danish Pastry',
     description: 'Sweet Danish pastry with fruit filling',
     price: 4.49,
@@ -101,11 +125,19 @@ const PRODUCTS: Product[] = [
     category: 'pastries'
   },
   {
-    id: '12',
+    id: '15',
     name: 'Éclair',
     description: 'Chocolate-topped éclair with vanilla cream',
     price: 4.99,
     image: 'https://images.unsplash.com/photo-1558326567-98ae2405596b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZWNsYWlyfGVufDB8fDB8fHww',
+    category: 'pastries'
+  },
+  {
+    id: '16',
+    name: 'Cinnamon Roll',
+    description: 'Freshly baked rolls with cinnamon and cream cheese icing',
+    price: 3.99,
+    image: 'https://images.unsplash.com/photo-1551780299-eb9392afe9ca?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fGNpbm5hbW9uJTIwcm9sbHN8ZW58MHx8MHx8fDA%3D',
     category: 'pastries'
   }
 ];
